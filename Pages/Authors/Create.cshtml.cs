@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Hanc_Darius_Lab2.Data;
 using Hanc_Darius_Lab2.Models;
 
-namespace Hanc_Darius_Lab2.Pages.Books
+namespace Hanc_Darius_Lab2.Pages.Authors
 {
     public class CreateModel : PageModel
     {
@@ -21,13 +21,11 @@ namespace Hanc_Darius_Lab2.Pages.Books
 
         public IActionResult OnGet()
         {
-            ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FirstName");
-            ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID","PublisherName");
             return Page();
         }
 
         [BindProperty]
-        public Bookcs Bookcs { get; set; }
+        public Author Author { get; set; }
         
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
@@ -38,7 +36,7 @@ namespace Hanc_Darius_Lab2.Pages.Books
                 return Page();
             }
 
-            _context.Bookcs.Add(Bookcs);
+            _context.Author.Add(Author);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

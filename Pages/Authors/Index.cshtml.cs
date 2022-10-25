@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Hanc_Darius_Lab2.Data;
 using Hanc_Darius_Lab2.Models;
 
-namespace Hanc_Darius_Lab2.Pages.Books
+namespace Hanc_Darius_Lab2.Pages.Authors
 {
     public class IndexModel : PageModel
     {
@@ -19,16 +19,13 @@ namespace Hanc_Darius_Lab2.Pages.Books
             _context = context;
         }
 
-        public IList<Bookcs> Bookcs { get;set; } = default!;
+        public IList<Author> Author { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            if (_context.Bookcs != null)
+            if (_context.Author != null)
             {
-                Bookcs = await _context.Bookcs
-                    .Include(b => b.Publisher)
-                    .Include(c => c.Author)
-                    .ToListAsync();
+                Author = await _context.Author.ToListAsync();
             }
         }
     }

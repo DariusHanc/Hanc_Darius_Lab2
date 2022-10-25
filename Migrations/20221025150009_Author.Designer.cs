@@ -4,6 +4,7 @@ using Hanc_Darius_Lab2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hanc_Darius_Lab2.Migrations
 {
     [DbContext(typeof(Hanc_Darius_Lab2Context))]
-    partial class Hanc_Darius_Lab2ContextModelSnapshot : ModelSnapshot
+    [Migration("20221025150009_Author")]
+    partial class Author
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
