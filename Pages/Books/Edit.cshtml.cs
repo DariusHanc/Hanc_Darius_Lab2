@@ -11,7 +11,7 @@ using Hanc_Darius_Lab2.Models;
 
 namespace Hanc_Darius_Lab2.Pages.Books
 {
-    public class EditModel : PageModel
+    public class EditModel : BookCategoriesPageModel
     {
         private readonly Hanc_Darius_Lab2.Data.Hanc_Darius_Lab2Context _context;
 
@@ -30,11 +30,27 @@ namespace Hanc_Darius_Lab2.Pages.Books
                 return NotFound();
             }
 
+            Bookcs = await _context.Bookcs
+                .Include(b => b.Publisher)
+                .Include(b => b.BookCategories).ThenInclude(b => b.Category)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            PopulateAssignedCategoryData(_context, Bookcs);
+
+            var authorList = _context.Author.Select(x => new
+            {
+                x.ID,
+                FullName = x.LastName + " " + x.FirstName
+            });
+
+
             var bookcs =  await _context.Bookcs.FirstOrDefaultAsync(m => m.ID == id);
             if (bookcs == null)
             {
                 return NotFound();
             }
+
             Bookcs = bookcs;
             ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FirstName");
             ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID",
@@ -45,12 +61,38 @@ namespace Hanc_Darius_Lab2.Pages.Books
 
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories)
         {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+            var bookToUpdate = await _context.Bookcs
+                    .Include(i => i.Publisher)
+                    .Include(i => i.BookCategories)
+                    .ThenInclude(i => i.Category)
+                    .FirstOrDefaultAsync(s => s.ID == id);
+            if (bookToUpdate == null)
+            {
+                return NotFound();
+            }
+            if (await TryUpdateModelAsync<Bookcs>(bookToUpdate, "Book", i => i.Title, i => i.Author, i => i.Price, i => i.PublishingDate, i => i.Publisher))
+            {
+                UpdateBookCategories(_context, selectedCategories, bookToUpdate);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+
+            UpdateBookCategories(_context, selectedCategories, bookToUpdate);
+            PopulateAssignedCategoryData(_context, bookToUpdate);
+            return Page();
+
+
 
             _context.Attach(Bookcs).State = EntityState.Modified;
 

@@ -10,7 +10,7 @@ using Hanc_Darius_Lab2.Models;
 
 namespace Hanc_Darius_Lab2.Pages.Books
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BookCategoriesPageModel
     {
         private readonly Hanc_Darius_Lab2.Data.Hanc_Darius_Lab2Context _context;
 
@@ -24,6 +24,10 @@ namespace Hanc_Darius_Lab2.Pages.Books
             ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "FirstName");
             ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID","PublisherName");
             return Page();
+            
+            var book = new Bookcs();
+            book.BookCategories = new List<BookCategory>();
+            PopulateAssignedCategoryData(_context, book);
         }
 
         [BindProperty]
@@ -31,17 +35,35 @@ namespace Hanc_Darius_Lab2.Pages.Books
         
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
-        {
-          if (!ModelState.IsValid)
+       
+            public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
             {
+                var newBook = new Bookcs();
+                if (selectedCategories != null)
+                {
+                    newBook.BookCategories = new List<BookCategory>();
+                    foreach (var cat in selectedCategories)
+                    {
+                        var catToAdd = new BookCategory
+                        {
+                            CategoryID = int.Parse(cat)
+                        };
+                        newBook.BookCategories.Add(catToAdd);
+                    }
+                }
+                if (await TryUpdateModelAsync<Bookcs>(
+                newBook,
+                "Book",
+                i => i.Title, i => i.Author,
+                i => i.Price, i => i.PublishingDate, i => i.PublisherID))
+                {
+                    _context.Bookcs.Add(newBook);
+                    await _context.SaveChangesAsync();
+                    return RedirectToPage("./Index");
+                }
+                PopulateAssignedCategoryData(_context, newBook);
                 return Page();
             }
-
-            _context.Bookcs.Add(Bookcs);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
         }
-    }
+    
 }
