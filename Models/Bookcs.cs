@@ -24,5 +24,6 @@ namespace Hanc_Darius_Lab2.Models
         public Publisher? Publisher { get; set; } // navigation catre publiksher
         public Author? Author { get; set;} // navigation catre author
         public int? AuthorID { get; set; } //cheie straina pentru author
+        public ICollection<BookCategory>? BookCategories { get; set; }
     }
 }
